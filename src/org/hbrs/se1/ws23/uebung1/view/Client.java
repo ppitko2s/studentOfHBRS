@@ -3,6 +3,12 @@ package org.hbrs.se1.ws23.uebung1.view;
 import com.sun.java.accessibility.util.Translator;
 import org.hbrs.se1.ws23.uebung1.control.Factory;
 import org.hbrs.se1.ws23.uebung1.control.GermanTranslator;
+import org.hbrs.se1.ws23.uebung2.ConcreteMember;
+import org.hbrs.se1.ws23.uebung2.Container;
+import org.hbrs.se1.ws23.uebung2.Member;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Client {
 	private GermanTranslator translatorGerman;
@@ -26,17 +32,11 @@ public class Client {
 
 			String Uebersetzung = translatorGerman.translateNumber(aNumber);
 
-
-
-
-
-
-
-
 			System.out.println("Das Ergebnis der Berechnung: " +
 					Uebersetzung  );
 
 		 }
+
 }
 
 

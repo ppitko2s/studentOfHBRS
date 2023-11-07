@@ -1,6 +1,13 @@
 package org.hbrs.se1.ws23.uebung3.persistence;
 
+import org.hbrs.se1.ws23.solutions.uebung2.Member;
+import org.hbrs.se1.ws23.uebung2.Container;
+
+import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.hbrs.se1.ws23.uebung3.persistence.PersistenceException.ExceptionType.ImplementationNotAvailable;
 
 public class PersistenceStrategyStream<E> implements PersistenceStrategy<E> {
 
@@ -13,6 +20,11 @@ public class PersistenceStrategyStream<E> implements PersistenceStrategy<E> {
         this.location = location;
     }
 
+    FileInputStream fis = null;
+    ObjectInputStream ois = null;
+    FileOutputStream fos = null;
+    ObjectOutputStream oos = null;
+
     @Override
     /**
      * Method for opening the connection to a stream (here: Input- and Output-Stream)
@@ -20,7 +32,14 @@ public class PersistenceStrategyStream<E> implements PersistenceStrategy<E> {
      * and save.
      */
     public void openConnection() throws PersistenceException {
-
+        try {
+            fis = new FileInputStream(location);
+            ois = new ObjectInputStream(fis);
+            fos = new FileOutputStream(location);
+            oos = new ObjectOutputStream(fos);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -28,15 +47,26 @@ public class PersistenceStrategyStream<E> implements PersistenceStrategy<E> {
      * Method for closing the connections to a stream
      */
     public void closeConnection() throws PersistenceException {
-
+        try {
+            fis.close();
+            ois.close();
+            fos.close();
+            oos.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     /**
      * Method for saving a list of Member-objects to a disk (HDD)
      */
-    public void save(List<E> member) throws PersistenceException  {
-
+    public void store(List<E> member) throws PersistenceException  {
+        try {
+            oos.writeObject(member);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -45,7 +75,19 @@ public class PersistenceStrategyStream<E> implements PersistenceStrategy<E> {
      * Some coding examples come for free :-)
      * Take also a look at the import statements above ;-!
      */
-    public List<E> load() throws PersistenceException  {
+    public List<E> load() throws PersistenceException {
+        List<E> loadedList = null;
+        try {
+            //loadedList = (List<E>) ois.readObject();
+            Object obj = ois.readObject();
+            if (obj instanceof List<?>) {
+                loadedList = (List<E>) obj;
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            throw new PersistenceException(ImplementationNotAvailable, "");
+        }
+
+
         // Some Coding hints ;-)
 
         // ObjectInputStream ois = null;
@@ -66,6 +108,6 @@ public class PersistenceStrategyStream<E> implements PersistenceStrategy<E> {
         // return newListe
 
         // and finally close the streams (guess where this could be...?)
-        return null;
+        return loadedList;
     }
 }
